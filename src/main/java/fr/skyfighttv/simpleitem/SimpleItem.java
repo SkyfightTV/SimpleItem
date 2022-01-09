@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SimpleItem extends ItemCreator {
@@ -47,10 +48,15 @@ public class SimpleItem extends ItemCreator {
         private void onInventoryClick(InventoryClickEvent event) {
             if (event.getCurrentItem() == null)
                 return;
+            boolean use = false;
             for (SimpleItem item : consumer.keySet()) {
-                if (event.getCurrentItem().isSimilar(item.toItemStack())) {
+                if (event.getCurrentItem().equals(item.toItemStack())) {
                     event.setCancelled(true);
-                    consumer.get(item).accept((Player) event.getWhoClicked(), item, event);
+                    if (!use) {
+                        use = true;
+                        consumer.get(item).accept((Player) event.getWhoClicked(), item, event);
+                    } else
+                        consumer.remove(item);
                 }
             }
         }
@@ -59,20 +65,31 @@ public class SimpleItem extends ItemCreator {
         private void onInteract(PlayerInteractEvent event) {
             if (event.getItem() == null)
                 return;
-            for (SimpleItem item : consumer.keySet()) {
-                if (event.getItem().isSimilar(item.toItemStack())) {
+            boolean use = false;
+
+            for (SimpleItem item : new ArrayList<>(consumer.keySet())) {
+                if (event.getItem().equals(item.toItemStack())) {
                     event.setCancelled(true);
-                    consumer.get(item).accept(event.getPlayer(), item, event);
+                    if (!use) {
+                        use = true;
+                        consumer.get(item).accept(event.getPlayer(), item, event);
+                    } else
+                        consumer.remove(item);
                 }
             }
         }
 
         @EventHandler
         private void onInteractEntity(PlayerInteractEntityEvent event) {
-            for (SimpleItem item : consumer.keySet()) {
-                if (event.getPlayer().getInventory().getItemInMainHand().isSimilar(item.toItemStack())) {
+            boolean use = false;
+            for (SimpleItem item : new ArrayList<>(consumer.keySet())) {
+                if (event.getPlayer().getInventory().getItemInMainHand().equals(item.toItemStack())) {
                     event.setCancelled(true);
-                    consumer.get(item).accept(event.getPlayer(), item, event);
+                    if (!use) {
+                        use = true;
+                        consumer.get(item).accept(event.getPlayer(), item, event);
+                    } else
+                        consumer.remove(item);
                 }
             }
         }
