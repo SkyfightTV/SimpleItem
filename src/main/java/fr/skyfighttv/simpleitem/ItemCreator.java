@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 import java.lang.reflect.Field;
@@ -236,13 +237,9 @@ public class ItemCreator {
         return this;
     }
 
-    public ItemCreator setPotion(PotionType potionType, int level, boolean splash) {
-        if(is.getType() == Material.POTION) {
-            Potion potion = new Potion(potionType);
-            potion.setLevel(level);
-            potion.setSplash(splash);
-            potion.apply(this.is);
-        }
+    public ItemCreator setPotion(PotionType potionType, boolean level) {
+        if(is.getItemMeta() instanceof PotionMeta)
+            ((PotionMeta) is.getItemMeta()).setBasePotionData(new PotionData(potionType, false, level));
         return this;
     }
 
