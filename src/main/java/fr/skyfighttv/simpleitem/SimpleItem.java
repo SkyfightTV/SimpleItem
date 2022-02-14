@@ -49,7 +49,7 @@ public class SimpleItem extends ItemCreator {
             if (event.getCurrentItem() == null)
                 return;
             boolean use = false;
-            for (SimpleItem item : consumer.keySet()) {
+            for (SimpleItem item : new ArrayList<>(consumer.keySet())) {
                 if (event.getCurrentItem().equals(item.toItemStack())) {
                     event.setCancelled(true);
                     if (!use) {
